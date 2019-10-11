@@ -145,5 +145,3 @@ STATICFILES_DIRS = (
 )
 
 django_heroku.settings(locals())
-
-AUTH_USER_MODEL = "roads.Road"

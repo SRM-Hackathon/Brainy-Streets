@@ -1,13 +1,26 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 import datetime
 
 # Create your models here.
 
+class Authority(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
-class Road(AbstractUser):
+
+class EmergencyVehicle(models.Model):
+    authority = models.OneToOneField(Authority, on_delete=models.SET_NULL, null=True)
+    latitude = models.BigIntegerField()
+    longitude = models.BigIntegerField()
+    destination_latitude = models.BigIntegerField()
+    destination_longitude = models.BigIntegerField()
+
+
+class Road(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     lane_count = models.PositiveSmallIntegerField(default=None, null=True)
-    two_way = models.BooleanField()
+    barricade = models.BooleanField(default=False)
+    shut_reason = models.TextField(null=True, default=None)
 
 
 class Sensor(models.Model):

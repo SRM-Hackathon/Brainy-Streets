@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}brainy streets{% endblock %}
+
+{% block top %}
+  <!-- HereMaps -->
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+  type="text/javascript" charset="utf-8"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+  type="text/javascript" charset="utf-8"></script>
+  </script>
+{% endblock %}
+
+{% block body %}
+    <div class="position-relative">
+        <!-- shape Hero -->
+        <section class="section section-lg section-shaped pb-150">
+            <div class="shape shape-style-3 shape-default">
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:40px; min-height: 40px"></span>
+            <span style="min-width:200px; min-height: 120px; position: absolute; top: 30%; left: 60%; background-color: #7795f8"></span>
+            </div>
+            <div class="container py-lg-lg d-flex pt-5">
+            <div class="col px-0">
+                <div class="row">
+                <div class="col-lg-6 col-md-8">
+                    <h1 class="display-3  text-white"><span>Brainy Streets presents</span>Our Smart Road System</h1>
+                    <p class="lead  text-white">It comes with roadmaps to display our network with beautiful 3D maps and graphs.</p>
+                    <div class="btn-wrapper">
+                    <a href="{% url 'harp' %}" class="btn btn-info btn-icon mb-3 mb-sm-0">
+                        <span class="btn-inner--icon"><i class="fa fa-building"></i></span>
+                        <span class="btn-inner--text">Harp Map</span>
+                    </a>
+                    <a href="#locationheader" class="btn btn-white btn-icon mb-3 mb-sm-0">
+                        <span class="btn-inner--icon"><i class="fa fa-map"></i></span>
+                        <span class="btn-inner--text">Normal Map</span>
+                    </a>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </div>
+    <section class="section section-lg">
+
+      <div style="padding-left: 5vw">
+        <h1 id="locationheader">Your Location</h1>
+        <p id="userlocation">Loading your location</p>
+      </div>
+      <div style="width: 90vw; height: 90vh; padding-left: 5vw" id="wizmap">
+      </div>
+{% endblock %}
+
+{% block endjs %}
+  <!-- HereMaps -->
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"
+  type="text/javascript" charset="utf-8"></script>
+  <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"
+  type="text/javascript" charset="utf-8"></script>
+  <!-- Custom JS -->
+  <script src="{% static 'js/maps.js' %}" type="text/javascript" charset="utf-8">
+  </script>
+{% endblock %}
