@@ -1,0 +1,1 @@
+web: gunicorn brainyStreets.wsgi --log-file -

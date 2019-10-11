@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pytz = "==2019.1"
+sqlparse = "==0.3.0"
+gunicorn = "*"
+django-heroku = "*"
+django-cors-headers = "*"
+django-rest-framework = "*"
+Django = "==2.2.3"
+
+[requires]
+python_version = "3.7"
