@@ -41,15 +41,16 @@ class SaveData(generics.GenericAPIView):
                     num = 0
 
             user = Token.objects.get(key=form_data[1]).user
+            road = Road.objects.get(user=user)
 
             Data.objects.create(
                 aqi=numbers[0]/100,
                 ldr=numbers[1],
                 hits=numbers[2],
-                road=Road.objects.get(user=user),
+                road=road,
             )
 
-            return JsonResponse({}, status=status.HTTP_200_OK)
+            return JsonResponse([int(road.barricade), 0], status=status.HTTP_200_OK, safe=False)
         except Exception as e:
             return JsonResponse({'error': str(e), 'body': request.body.decode(), 'numbers': numbers, 'token': form_data[1]}, status=status.HTTP_200_OK)
 
@@ -111,6 +112,9 @@ class GetGeoJson(generics.GenericAPIView):
         for road in roads:
             data = {
                 "type": "line",
+                "properties": {
+                    "barricade": "barricaded" if road.barricade else "open"
+                },
                 "geometry": {
                     "type": "LineString",
                     "coordinates": [[ sensor.longitude/1000000, sensor.latitude/1000000 ] for sensor in road.sensor_set.all().order_by('id')]

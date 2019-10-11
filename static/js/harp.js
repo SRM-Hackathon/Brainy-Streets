@@ -22,6 +22,9 @@ function makeChart(label, data, container) {
             dataPoints: data
         }];
     }
+    else{
+        data_obj = [];
+    }
     chart = new CanvasJS.Chart(container+"chartContainer", {
         animationEnabled: true,
         theme: "light2",
@@ -33,7 +36,8 @@ function makeChart(label, data, container) {
         },
         data: data_obj
     });
-    chart.render();
+    if(chart)
+        chart.render();
 }
 
 // Gives user's location
@@ -73,12 +77,14 @@ function daynightclicked(daynight) {
 function newmap(latitude, longitude, daynight) {
     if(daynight=="night")
     {
-        lineColor = "#FF0000",
-        pointColor = "#FFFF00"
+        lineColor = "#FFFF00",
+        pointColor = "#000000",
+        barricadedLineColor = "#FF0000"
     }
     else{
         lineColor = "#000000",
-        pointColor = "#FFFFFF"
+        pointColor = "#FFFFFF",
+        barricadedLineColor = "#FF0000"
     }
     const canvas = document.getElementById('map');
     const map = new harp.MapView({
@@ -122,15 +128,16 @@ function newmap(latitude, longitude, daynight) {
     fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-geojson/'+latitude.toString()+"/"+longitude.toString())
     .then(data => data.json())
     .then(data => {
-    const geoJsonDataProvider = new harp.GeoJsonDataProvider("wireless-hotspots", data);
-    const geoJsonDataSource = new harp.OmvDataSource({
-        dataProvider: geoJsonDataProvider,
-        name: "wireless-hotspots",
-        //styleSetName: "wireless-hotspots" NOTE: Not necessary here. For use if you want to add your style rules in the external stylesheet.
+        const geoJsonDataProvider = new harp.GeoJsonDataProvider("wireless-hotspots", data);
+        const geoJsonDataSource = new harp.OmvDataSource({
+            dataProvider: geoJsonDataProvider,
+            name: "wireless-hotspots",
+            //styleSetName: "wireless-hotspots" NOTE: Not necessary here. For use if you want to add your style rules in the external stylesheet.
     });
 
     map.addDataSource(geoJsonDataSource).then(() => {
-        const styles = [{
+        const styles = [
+        {
            when: "$geometryType == 'point'",
            technique: "circles",
            renderOrder: 1000,
@@ -140,17 +147,27 @@ function newmap(latitude, longitude, daynight) {
            }
         },
         {
-            when: "$geometryType ^= 'line'",
+            "when": "$geometryType ^= 'line' && properties.barricade != 'barricaded'",
             renderOrder: 10000,
             technique: "solid-line",
             attr: {
                color: lineColor,
-               transparent: true,
                opacity: 1,
                metricUnit: "Pixel",
                lineWidth: 10
             }
-         }
+         },
+         {
+             when: "$geometryType ^= 'line' && properties.barricade == 'barricaded'",
+             renderOrder: 10000,
+             technique: "solid-line",
+             attr: {
+                color: barricadedLineColor,
+                opacity: 1,
+                metricUnit: "Pixel",
+                lineWidth: 10
+             }
+          }
         ]
         geoJsonDataSource.setStyleSet(styles);
         map.update();

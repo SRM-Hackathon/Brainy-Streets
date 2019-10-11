@@ -10,7 +10,6 @@ class DataSerializer(serializers.ModelSerializer):
 
 
 class RoadSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Road
-        fields = ('username', 'lane_count', 'two_way')
+        fields = ('user', 'lane_count', 'barricade', 'shut_reason')
