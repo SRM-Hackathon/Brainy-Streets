@@ -89,4 +89,9 @@ target/
 __pycache__/
 local_settings.py
 
+# Environments
+.venv
 .env
+
+# VS Code
+settings.json
