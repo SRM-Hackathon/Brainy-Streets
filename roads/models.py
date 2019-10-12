@@ -9,7 +9,7 @@ class Authority(models.Model):
 
 
 class EmergencyVehicle(models.Model):
-    authority = models.OneToOneField(Authority, on_delete=models.SET_NULL, null=True)
+    authority = models.ForeignKey(Authority, on_delete=models.SET_NULL, null=True)
     latitude = models.BigIntegerField()
     longitude = models.BigIntegerField()
     destination_latitude = models.BigIntegerField()

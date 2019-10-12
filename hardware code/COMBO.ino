@@ -13,8 +13,8 @@ Servo servo;
 LiquidCrystal lcd(22, 23, 24, 25, 26, 28);
 
 int hits=0;
-int sensor1 = 52;
-int sensor2 = 51;
+int sensor1 = 20;
+int sensor2 = 21;
 
 int count=0;
 
@@ -36,8 +36,8 @@ int emergengy_led=11;
 
 int sensorValue = 0; // variable to store the value coming from the sensor
 
-int IR1=52;
-int IR2=51;
+int IR1=20;
+int IR2=21;
 int IR3=16;
 int IR4=17;
 int IR5=26;
@@ -48,6 +48,8 @@ int l2=9;
 int l3=10;
 int l4=43;
 int l5=46;
+
+int tt;
 
 void setup()
 {
@@ -74,8 +76,8 @@ void setup()
   Serial.begin(115200); //Initialize serial port - 9600 bps
   Serial1.begin(115200);
 
-  attachInterrupt(4,fun1,RISING);
-  attachInterrupt(3,fun2,FALLING);
+  attachInterrupt(3,fun1,RISING);
+  attachInterrupt(2,fun2,FALLING);
   //lcd.clear();
   lcd.begin(16,2);
   lcd.clear();
@@ -98,12 +100,6 @@ void fun2()
 
 void loop()
 {
-   //Serial.println(Time1);
-   //Serial.println(Time2);
-
-   attachInterrupt(4,fun1,RISING);
-   attachInterrupt(3,fun2,RISING);
-
    if(flag == 0)
    {
       if(Time1 > Time2)
@@ -111,11 +107,13 @@ void loop()
         Time = Time1 - Time2;
         Speed = (distance*1000)/Time;
       }
+
       else if(Time2 > Time1)
       {
         Time = Time2 - Time1;
         Speed = (distance*1000)/Time;
       }
+
       else
       {
         Speed = 0;
@@ -133,7 +131,7 @@ void loop()
 
     else
     {
-      if(Speed>=50)
+      if(Speed>=40)
       {
         lcd.setCursor(0, 0);
         lcd.cursor();
@@ -146,12 +144,11 @@ void loop()
         //lcd.scrollDisplayLeft();
         lcd.noCursor();
 
-        servo.write(30);
+        servo.write(15);
       }
 
-      else if(Speed<50)
+      else if(Speed<40)
       {
-        servo.write(30);
         lcd.setCursor(0, 0);
         lcd.cursor();
         lcd.print(Speed);
@@ -162,6 +159,8 @@ void loop()
         lcd.print("SPEED OKAY !!");
         //lcd.scrollDisplayLeft();
         lcd.noCursor();
+
+        servo.write(0);
       }
 
       Time1 = 0;

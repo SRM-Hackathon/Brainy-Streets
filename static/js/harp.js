@@ -268,6 +268,7 @@ function newmap(latitude, longitude, daynight) {
             fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-data/'+geoPosition.latitude.toString()+"/"+geoPosition.longitude.toString())
             .then(data => data.json())
             .then(data => {
+                console.log("chartdata:");
                 console.log(data);
                 if(data.sensor && data.data.length)
                 {

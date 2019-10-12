@@ -27,8 +27,8 @@ def home(request):
 def harp(request):
     return render(request, 'harp.html')
 
-def datadetails(request):
-    return render(request, 'datadetails.html')
+# def datadetails(request):
+#     return render(request, 'datadetails.html')
 
 def loginUser(request):
     if request.method == 'POST':
@@ -76,9 +76,37 @@ class SaveData(generics.GenericAPIView):
                 road=road,
             )
 
+            sensors = Sensor.objects.filter(road=road)
+
+            vehicles = EmergencyVehicle.objects.all()
+
+            min = {'sensor': None, 'dist': None}
+
+            for vehicle in vehicles:
+                latitude = vehicle.latitude
+                longitude = vehicle.longitude
+                for sensor in sensors:
+                    lat_diff = sensor.latitude - latitude
+                    long_diff = sensor.longitude - longitude
+                    dist = lat_diff * lat_diff + long_diff * long_diff
+                    if (not min['dist'] or dist < min['dist']) and dist<5000000:
+                        min['sensor'] = sensor
+                        min['dist'] = dist
+
+                if min['sensor']:
+                    return JsonResponse([int(road.barricade), 1], status=status.HTTP_200_OK, safe=False)
+
             return JsonResponse([int(road.barricade), 0], status=status.HTTP_200_OK, safe=False)
         except Exception as e:
             return JsonResponse({'error': str(e), 'body': request.body.decode(), 'numbers': numbers, 'token': form_data[1]}, status=status.HTTP_200_OK)
+
+
+class GetAmbulances(generics.GenericAPIView):
+    permission_classes = (AllowAny, )
+
+    def get(self, request):
+        vehicles = EmergencyVehicle.objects.all()
+        return JsonResponse({'ambulances': EmergencyVehicleSerializer(vehicles, many=True).data}, status=status.HTTP_200_OK)
 
 
 class GetData(generics.GenericAPIView):
@@ -214,8 +242,8 @@ def barricadeRoad(request):
     try:
         location = request.POST.get('roadLocation').split(',')
 
-        latitude = int(float(location[0])*1000000)
-        longitude = int(float(location[1])*1000000)
+        latitude = int(location[0])
+        longitude = int(location[1])
 
         sensors = Sensor.objects.all()
 
@@ -248,11 +276,11 @@ def createAmbulance(request):
         location = request.POST.get('location')
         destination = request.POST.get('destination')
 
-        dest_latitude = int(float(destination[0])*1000000)
-        dest_longitude = int(float(destination[1])*1000000)
+        dest_latitude = int(destination[0])
+        dest_longitude = int(destination[1])
 
-        latitude = int(float(location[0])*1000000)
-        longitude = int(float(location[1])*1000000)
+        latitude = int(location[0])
+        longitude = int(location[1])
 
         EmergencyVehicle.objects.create(
             authority_id=request.user.id,

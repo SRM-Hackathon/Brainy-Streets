@@ -145,6 +145,33 @@ function newmap(latitude, longitude, daynight) {
         map.update();
     });
 
+    fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-ambulances/')
+    .then(data => data.json())
+    .then(data => {
+        console.log(data.ambulances);
+
+        for(ambulance of data.ambulances)
+        {
+            const geometry = new THREE.BoxGeometry(30, 30, 30);
+            const material = new THREE.MeshStandardMaterial({ color: "#ffffff" });
+            const cube = new THREE.Mesh(geometry, material);
+            cube.renderOrder = 100000;
+
+            //Get the position of the ambulances
+            geoPosition = map.getGeoCoordinatesAt(0, 0);
+            geoPosition.latitude = ambulance.latitude;
+            geoPosition.longitude = ambulance.longitude;
+            cube.geoPosition = geoPosition;
+
+            console.log(geoPosition);
+
+            //Add object to the map
+            map.mapAnchors.add(cube);
+            map.update();
+        }
+
+    })
+
 
     fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-geojson/'+latitude.toString()+"/"+longitude.toString())
     .then(data => data.json())
@@ -252,7 +279,7 @@ function newmap(latitude, longitude, daynight) {
             }
             $('#selectedpointtext').text(selected_latitude.toFixed(6) + lat + selected_longitude.toFixed(6) + long);
             console.log(inputInto);
-            $('input[name='+inputInto+']').val(geoPosition.latitude.toString()+","+geoPosition.longitude.toString());
+            $('input[name='+inputInto+']').val((geoPosition.latitude*1000000).toString()+","+(geoPosition.longitude*1000000).toString());
         }
     })
 }
