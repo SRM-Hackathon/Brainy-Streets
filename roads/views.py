@@ -242,8 +242,8 @@ def barricadeRoad(request):
     try:
         location = request.POST.get('roadLocation').split(',')
 
-        latitude = int(location[0])
-        longitude = int(location[1])
+        latitude = int(float(location[0]))
+        longitude = int(float(location[1]))
 
         sensors = Sensor.objects.all()
 
@@ -273,14 +273,14 @@ def barricadeRoad(request):
 @login_required
 def createAmbulance(request):
     try:
-        location = request.POST.get('location')
-        destination = request.POST.get('destination')
+        location = request.POST.get('location').split(',')
+        destination = request.POST.get('destination').split(',')
 
-        dest_latitude = int(destination[0])
-        dest_longitude = int(destination[1])
+        dest_latitude = int(float(destination[0]))
+        dest_longitude = int(float(destination[1]))
 
-        latitude = int(location[0])
-        longitude = int(location[1])
+        latitude = int(float(location[0]))
+        longitude = int(float(location[1]))
 
         EmergencyVehicle.objects.create(
             authority_id=request.user.id,
