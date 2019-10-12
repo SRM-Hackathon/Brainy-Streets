@@ -14,6 +14,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework import generics, status
 from rest_framework.authentication import TokenAuthentication
 
+from django.contrib import messages
+
 import datetime
 import json
 
@@ -49,7 +51,7 @@ def dashboard(request):
     return render(request, 'dashboard.html')
 
 class SaveData(generics.GenericAPIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (IsAuthenticated, )
 
     def post(self, request, *args, **kwargs):
         try:
@@ -206,3 +208,62 @@ class NewRoad(generics.GenericAPIView):
         except Exception as e:
             response_data = {'error_message': "Cannot sign you up due to " + str(e)}
             return JsonResponse(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+@login_required
+def barricadeRoad(request):
+    try:
+        location = request.POST.get('roadLocation').split(',')
+
+        latitude = int(float(location[0])*1000000)
+        longitude = int(float(location[1])*1000000)
+
+        sensors = Sensor.objects.all()
+
+        min = {'sensor': None, 'dist': None}
+        for sensor in sensors:
+            lat_diff = sensor.latitude - latitude
+            long_diff = sensor.longitude - longitude
+            dist = lat_diff * lat_diff + long_diff * long_diff
+            if (not min['dist'] or dist < min['dist']) and dist<5000000:
+                min['sensor'] = sensor
+                min['dist'] = dist
+
+        if min['sensor']:
+            road = min['sensor'].road
+            road.barricade = not road.barricade
+            road.save()
+            barricaded = "barricaded" if road.barricade else "open"
+            messages.add_message(request, messages.INFO, road.user.username+" is now "+barricaded, "alert-success")
+        else:
+            messages.add_message(request, messages.INFO, "No road found there!", "alert-danger")
+
+    except Exception as e:
+        messages.add_message(request, messages.INFO, str(e), "alert-danger")
+    return redirect('dashboard')
+
+
+@login_required
+def createAmbulance(request):
+    try:
+        location = request.POST.get('location')
+        destination = request.POST.get('destination')
+
+        dest_latitude = int(float(destination[0])*1000000)
+        dest_longitude = int(float(destination[1])*1000000)
+
+        latitude = int(float(location[0])*1000000)
+        longitude = int(float(location[1])*1000000)
+
+        EmergencyVehicle.objects.create(
+            authority_id=request.user.id,
+            latitude=latitude,
+            longitude=longitude,
+            destination_latitude=dest_latitude,
+            destination_longitude=dest_longitude
+        )
+
+        messages.add_message(request, messages.INFO, "Emergency vehicle created!", "alert-success")
+
+    except Exception as e:
+        messages.add_message(request, messages.INFO, str(e), "alert-danger")
+    return redirect('dashboard')

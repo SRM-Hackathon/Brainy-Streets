@@ -36,11 +36,11 @@ type="text/javascript" charset="utf-8"></script>
                     <div class="btn-wrapper">
                         <button class="btn btn-info btn-icon mb-3 mb-sm-0" onclick="barricadeMode()">
                             <span class="btn-inner--icon"><i class="fa fa-exclamation-triangle"></i></span>
-                            <span class="btn-inner--text">Barricade a Road</span>
+                            <span class="btn-inner--text">Barricade</span>
                         </button>
                         <button class="btn btn-danger btn-icon mb-3 mb-sm-0" onclick="ambulanceMode()">
                             <span class="btn-inner--icon"><i class="fa fa-ambulance"></i></span>
-                            <span class="btn-inner--text">Create an Ambulance</span>
+                            <span class="btn-inner--text">Emergency Vehicle</span>
                         </button>
                     </div>
                 </div>
@@ -51,6 +51,14 @@ type="text/javascript" charset="utf-8"></script>
     </div>
     <div>
         <section class="section section-lg pb-2 pt-3">
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
             <div style="padding-left: 5vw">
                 <h1>Your Location</h1>
                 <p id="userlocation">Loading your location</p>
@@ -80,16 +88,26 @@ type="text/javascript" charset="utf-8"></script>
                             No Point selected
                         </div>
                         <div id="ambulanceSection">
-                            <form>
-                                <button class="btn btn-default" onclick="inputInto='ambulance'">Select Ambulance location</button>
-
-                                <button class="btn btn-default" onclick="inputInto='destination'">Select Ambulance destination</button>
-
-                                <button type="submit">
+                            <form method="POST" action="{% url 'create-ambulance' %}">
+                                {% csrf_token %}
+                                <div class="pb-2">
+                                <label for="location">Emergency Vehicle Location:</label>
+                                <input class="form-control" name="location" onfocus="console.log('location');inputInto='location'">
+                                <label for="destination">Emergency Vehicle Destination:</label>
+                                <input class="form-control" name="destination" onfocus="console.log('destination');inputInto='destination'">
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
                             </form>
                         </div>
                         <div id="barricadeSection">
-                            <button class="btn btn-default" onclick="inputInto='barricadedRoad'">Select Road to barricade</button>
+                            <form method="POST" action="{% url 'barricade-road' %}">
+                                {% csrf_token %}
+                                <div class="pb-2">
+                                <label for="location">Road to barricade/open:</label>
+                                <input class="form-control" name="roadLocation" onfocus="console.log('roadLocation');inputInto='roadLocation'">
+                                </div>
+                                <button type="submit" class="btn btn-default">Submit</button>
+                            </form>
                         </div>
                     </div>
                 </div>

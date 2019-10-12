@@ -242,23 +242,25 @@ function newmap(latitude, longitude, daynight) {
             const geoPosition = map.getGeoCoordinatesAt(evt.pageX, evt.pageY);
             if (geoPosition.latitude >= 0)
             {
+                selected_latitude = geoPosition.latitude;
                 lat = "°N, ";
             }
             else
             {
-                geoPosition.latitude = -geoPosition.latitude;
+                selected_latitude = -geoPosition.latitude;
                 lat = "°S, ";
             }
             if (geoPosition.longitude >= 0)
             {
+                selected_longitude = geoPosition.longitude;
                 long = "°E";
             }
             else
             {
-                geoPosition.longitude = -geoPosition.longitude;
+                selected_longitude = -geoPosition.longitude;
                 long = "°W";
             }
-            $('#selectedpointtext').text(geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long);
+            $('#selectedpointtext').text(selected_latitude.toFixed(6) + lat + selected_longitude.toFixed(6) + long);
 
             // console.log(geoPosition);
 
