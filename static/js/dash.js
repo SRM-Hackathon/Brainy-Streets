@@ -8,6 +8,25 @@ var geocoder = platform.getGeocodingService();
 var coordinates = {};
 
 var cacheddaynight = "day";
+inputInto = null;
+
+window.onload = function () {
+    $('#ambulanceSection').hide();
+    $('#barricadeSection').hide();
+}
+
+function ambulanceMode() {
+    $('#selectedmodetext').text('Ambulance Mode');
+    $('#ambulanceSection').show();
+    $('#barricadeSection').hide();
+
+}
+
+function barricadeMode() {
+    $('#selectedmodetext').text('Barricade Mode');
+    $('#ambulanceSection').hide();
+    $('#barricadeSection').show();
+}
 
 // Gives user's location
 if(navigator.geolocation) {
@@ -227,7 +246,7 @@ function newmap(latitude, longitude, daynight) {
                 geoPosition.longitude = -geoPosition.longitude;
                 long = "°W";
             }
-            document.getElementById('selectedpointtext').innerText = geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long;
+            $('#selectedpointtext').text(geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long);
         }
     })
 }

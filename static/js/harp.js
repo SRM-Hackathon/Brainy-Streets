@@ -258,7 +258,7 @@ function newmap(latitude, longitude, daynight) {
                 geoPosition.longitude = -geoPosition.longitude;
                 long = "°W";
             }
-            document.getElementById('selectedpointtext').innerText = geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long;
+            $('#selectedpointtext').text(geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long);
 
             // console.log(geoPosition);
 
@@ -266,8 +266,8 @@ function newmap(latitude, longitude, daynight) {
             fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-data/'+geoPosition.latitude.toString()+"/"+geoPosition.longitude.toString())
             .then(data => data.json())
             .then(data => {
-                // console.log(data);
-                if(data.data.length)
+                console.log(data);
+                if(data.sensor && data.data.length)
                 {
                     // document.getElementById('selectedpointtext').innerText += "<br>"+JSON.stringify(data.data);
                     var organised_AQIdata = [];
@@ -283,11 +283,17 @@ function newmap(latitude, longitude, daynight) {
                     makeChart("Light Density", organised_LDRdata, "LDR");
                     makeChart("Traffic Density", organised_trafficdata, "Traffic");
                 }
+                else if(data.sensor)
+                {
+                    makeChart("Selected sensor has no data", null, "AQI");
+                    makeChart("", null, "LDR");
+                    makeChart("", null, "Traffic");
+                }
                 else
                 {
-                    makeChart("Click on a sensor to see graphs", null, "");
-                    makeChart("", null, "");
-                    makeChart("", null, "");
+                    makeChart("Click on a sensor to see graphs", null, "AQI");
+                    makeChart("", null, "LDR");
+                    makeChart("", null, "Traffic");
                 }
             });
 
