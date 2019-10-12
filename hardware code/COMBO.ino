@@ -6,12 +6,15 @@
 
 #include <SoftwareSerial.h>
 #include<LiquidCrystal.h>
+#include<Servo.h>
+
+Servo servo;
 
 LiquidCrystal lcd(22, 23, 24, 25, 26, 28);
 
 int hits=0;
-int sensor1 = 14;
-int sensor2 = 7;
+int sensor1 = 52;
+int sensor2 = 51;
 
 int count=0;
 
@@ -22,9 +25,9 @@ int flag = 0;
 
 String str;
 
-int distance = 2;
+int distance =5;
 
-float Speed;
+int Speed;
 int gasPin = A5; //GAS sensor output pin to Arduino analog A5 pin
 int sensorPin = A0; // select the input pin for the LDR
 
@@ -33,29 +36,30 @@ int emergengy_led=11;
 
 int sensorValue = 0; // variable to store the value coming from the sensor
 
-int IR1=14;
-int IR2=7;
+int IR1=52;
+int IR2=51;
 int IR3=16;
 int IR4=17;
 int IR5=26;
-int IR6=19;
+int IR6=47;
 
 int l1=8;
 int l2=9;
 int l3=10;
-int l4=23;
-int l5=25;
-int l6=12;
+int l4=43;
+int l5=46;
 
 void setup()
-{ 
+{
+  servo.attach(49);
+  servo.write(0);
+
   pinMode(l1,OUTPUT);
   pinMode(l2,OUTPUT);
   pinMode(l3,OUTPUT);
   pinMode(l4,OUTPUT);
   pinMode(l5,OUTPUT);
-  pinMode(l6,OUTPUT);
-  
+
   pinMode(IR1,INPUT);
   pinMode(IR2,INPUT);
   pinMode(IR3,INPUT);
@@ -80,7 +84,7 @@ void setup()
 
 void fun1()
 {
-  Time1 = millis(); 
+  Time1 = millis();
   if (flag == 0) {flag = 1;}
   else {flag = 0;}
 }
@@ -94,6 +98,12 @@ void fun2()
 
 void loop()
 {
+   //Serial.println(Time1);
+   //Serial.println(Time2);
+
+   attachInterrupt(4,fun1,RISING);
+   attachInterrupt(3,fun2,RISING);
+
    if(flag == 0)
    {
       if(Time1 > Time2)
@@ -101,47 +111,51 @@ void loop()
         Time = Time1 - Time2;
         Speed = (distance*1000)/Time;
       }
-      else if(Time2 > Time1) 
+      else if(Time2 > Time1)
       {
         Time = Time2 - Time1;
         Speed = (distance*1000)/Time;
       }
-      else 
+      else
       {
         Speed = 0;
       }
     }
-  
+
     if(Speed == 0)
-    { 
-      //lcd.setCursor(0, 0); 
+    {
+      //Serial.println(Speed);
+      //lcd.setCursor(0, 0);
       //lcd.cursor();
       //lcd.print("BRAINY STREETS");
       //lcd.scrollDisplayLeft();
     }
-    
-    else 
-    { 
+
+    else
+    {
       if(Speed>=50)
       {
         lcd.setCursor(0, 0);
         lcd.cursor();
         lcd.print(Speed);
-        //Serial.println(Speed);
+        Serial.println(Speed);
         lcd.print(" cm/sec");
         lcd.setCursor(0, 1);
         lcd.cursor();
         lcd.print("SLOW DOWN !!");
         //lcd.scrollDisplayLeft();
         lcd.noCursor();
+
+        servo.write(30);
       }
 
       else if(Speed<50)
       {
+        servo.write(30);
         lcd.setCursor(0, 0);
         lcd.cursor();
         lcd.print(Speed);
-        //Serial.println(Speed);
+        Serial.println(Speed);
         lcd.print(" cm/sec");
         lcd.setCursor(0, 1);
         lcd.cursor();
@@ -149,11 +163,11 @@ void loop()
         //lcd.scrollDisplayLeft();
         lcd.noCursor();
       }
-    
+
       Time1 = 0;
       Time2 = 0;
     }
-  
+
     int t1 = digitalRead(IR1);
     int t2 = digitalRead(IR2);
     int t3 = digitalRead(IR3);
@@ -191,7 +205,7 @@ void loop()
     {
         hits=hits+1;
     }
-         
+
     if(t1!=1 && sensorValue < 200) // 1st IR detects //
     {
         digitalWrite(l1, HIGH);
@@ -210,7 +224,7 @@ void loop()
         digitalWrite(l3, HIGH);
     }
 
-  
+
     else if(t2==1 && t3!=1 && sensorValue < 200)
     {
         digitalWrite(l2, LOW);
@@ -223,12 +237,12 @@ void loop()
         digitalWrite(l4, HIGH);
     }
 
-  
+
     else if(t3==1 && t4!=1 && sensorValue < 200)
     {
          digitalWrite(l3, LOW);
          digitalWrite(l4, LOW);
-         
+
     }
 
     if(t4!=1 && sensorValue < 200)
@@ -256,15 +270,17 @@ void loop()
     }
 
     count++;
-    if(count>=1000)
+    if(count>=5000)
     {
-      str =String(int(state*100))+String("$")+String(sensorValue)+String("$")+String(hits)+String("$")+String(Speed);
-      Serial.println(str);
+      str=String(int(state*100))+String("$")+String(sensorValue)+String("$")+String(hits)+String("$")+String(int(Speed));
+      //Serial.println(str);
       Serial1.println(str);
+
       hits=0;
       state=0;
-      count =0;
+      sensorValue=0;
+      count=0;
     }
-    
+
     //delay(5000);
 }
