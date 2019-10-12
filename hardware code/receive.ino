@@ -1,5 +1,5 @@
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h>
+#include <WiFiClient.h> 
 #include <ESP8266WebServer.h>
 #include <ESP8266HTTPClient.h>
 #include<Servo.h>
@@ -19,43 +19,42 @@ String token="32b2fdda1091d026ce83267aad75078a740c07c9";
 
 WiFiClient client;
 
-void setup()
+void setup() 
 {
       servo.attach(D2);
       servo.write(0);
 
       pinMode(buzzer,OUTPUT);
-
+      
       // Open serial communications and wait for port to open:
       Serial.begin(115200);
-      while (!Serial)
+      while (!Serial) 
       {
          ; // wait for serial port to connect. Needed for native USB port only
       }
-
+     
       delay(10);
-
+ 
       Serial.println("Connecting to ");
       Serial.println(ssid);
-
-
+ 
+ 
       WiFi.begin(ssid, pass);
-
-      while (WiFi.status() != WL_CONNECTED)
+ 
+      while (WiFi.status() != WL_CONNECTED) 
       {
             delay(500);
             Serial.print(".");
       }
       Serial.println("");
       Serial.println("WiFi connected");
-
+ 
 }
-
-void loop()
+ 
+void loop() 
 {
-    Serial.println("Hi");
     HTTPClient http;    //Declare object of class HTTPClient
-
+    
     http.begin("http://10.4.62.24:8000/api/save-data/");              //Specify request destination
 
     char postStr[1000] = "";
@@ -66,26 +65,26 @@ void loop()
     {
       Serial.print(".");
     }
-
+    
     while(Serial.available()) {
       recv = char(Serial.read());
       //Serial.println(recv);
       postStr[i] = recv;
       i++;
     }
-
+    
     http.addHeader("Authorization", "Token "+token);
 
-    Serial.println(postStr);
-
+    //Serial.println(postStr);
+    
     int httpCode = http.POST(postStr+String("Token")+token);   //Send the request
-
+      
 
     String payload = http.getString();    //Get the response payload
 
-
-    Serial.println(payload);    //Print request response payload
-    Serial.println(httpCode);   //Print HTTP return code
+    
+    //Serial.println(payload);    //Print request response payload
+    //Serial.println(httpCode);   //Print HTTP return code
 
     baricade=payload[1];
     ambulance=payload[4];
@@ -105,6 +104,8 @@ void loop()
 
     if(ambulance==49)
     {
+      Serial.println("Ambulance Approaching");
+      Serial.println("Clear the Right Lane");
       digitalWrite(buzzer,HIGH);
     }
 

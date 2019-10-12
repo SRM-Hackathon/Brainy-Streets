@@ -52,16 +52,16 @@ int l5=46;
 int tt;
 
 void setup()
-{
+{ 
   servo.attach(49);
   servo.write(0);
-
+      
   pinMode(l1,OUTPUT);
   pinMode(l2,OUTPUT);
   pinMode(l3,OUTPUT);
   pinMode(l4,OUTPUT);
-  pinMode(l5,OUTPUT);
-
+  pinMode(l5,OUTPUT); 
+  
   pinMode(IR1,INPUT);
   pinMode(IR2,INPUT);
   pinMode(IR3,INPUT);
@@ -86,7 +86,7 @@ void setup()
 
 void fun1()
 {
-  Time1 = millis();
+  Time1 = millis(); 
   if (flag == 0) {flag = 1;}
   else {flag = 0;}
 }
@@ -107,30 +107,30 @@ void loop()
         Time = Time1 - Time2;
         Speed = (distance*1000)/Time;
       }
-
-      else if(Time2 > Time1)
+      
+      else if(Time2 > Time1) 
       {
         Time = Time2 - Time1;
         Speed = (distance*1000)/Time;
       }
-
-      else
+      
+      else 
       {
         Speed = 0;
       }
     }
-
+  
     if(Speed == 0)
-    {
+    { 
       //Serial.println(Speed);
-      //lcd.setCursor(0, 0);
+      //lcd.setCursor(0, 0); 
       //lcd.cursor();
       //lcd.print("BRAINY STREETS");
       //lcd.scrollDisplayLeft();
     }
-
-    else
-    {
+    
+    else 
+    { 
       if(Speed>=40)
       {
         lcd.setCursor(0, 0);
@@ -166,7 +166,7 @@ void loop()
       Time1 = 0;
       Time2 = 0;
     }
-
+  
     int t1 = digitalRead(IR1);
     int t2 = digitalRead(IR2);
     int t3 = digitalRead(IR3);
@@ -204,7 +204,7 @@ void loop()
     {
         hits=hits+1;
     }
-
+         
     if(t1!=1 && sensorValue < 200) // 1st IR detects //
     {
         digitalWrite(l1, HIGH);
@@ -223,7 +223,7 @@ void loop()
         digitalWrite(l3, HIGH);
     }
 
-
+  
     else if(t2==1 && t3!=1 && sensorValue < 200)
     {
         digitalWrite(l2, LOW);
@@ -236,12 +236,12 @@ void loop()
         digitalWrite(l4, HIGH);
     }
 
-
+  
     else if(t3==1 && t4!=1 && sensorValue < 200)
     {
          digitalWrite(l3, LOW);
          digitalWrite(l4, LOW);
-
+         
     }
 
     if(t4!=1 && sensorValue < 200)
@@ -274,12 +274,12 @@ void loop()
       str=String(int(state*100))+String("$")+String(sensorValue)+String("$")+String(hits)+String("$")+String(int(Speed));
       //Serial.println(str);
       Serial1.println(str);
-
+      
       hits=0;
       state=0;
       sensorValue=0;
       count=0;
-    }
-
+    }    
+    
     //delay(5000);
 }
