@@ -47,6 +47,7 @@ class Sensor(models.Model):
 class Data(models.Model):
     created = models.DateTimeField(auto_now=True)
     aqi = models.DecimalField(max_digits=5, decimal_places=2)
-    ldr = models.IntegerField()
-    hits = models.PositiveSmallIntegerField()
+    ldr = models.IntegerField(null=True)
+    hits = models.PositiveSmallIntegerField(null=True)
+    speed = models.IntegerField(null=True)
     road = models.ForeignKey(Road, on_delete=models.CASCADE)

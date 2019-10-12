@@ -70,6 +70,7 @@ class SaveData(generics.GenericAPIView):
                 aqi=numbers[0]/100,
                 ldr=numbers[1],
                 hits=numbers[2],
+                speed=numbers[3],
                 road=road,
             )
 
