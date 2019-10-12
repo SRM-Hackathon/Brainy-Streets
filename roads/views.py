@@ -7,6 +7,9 @@ from .models import Road, Sensor, Data, Authority, EmergencyVehicle
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 
+from django.contrib.auth.decorators import login_required
+from django.utils.html import escape
+
 from rest_framework.authtoken.models import Token
 from rest_framework import generics, status
 from rest_framework.authentication import TokenAuthentication
@@ -24,6 +27,26 @@ def harp(request):
 
 def datadetails(request):
     return render(request, 'datadetails.html')
+
+def loginUser(request):
+    if request.method == 'POST':
+        username = escape(request.POST['username'])
+        raw_password = escape(request.POST['password'])
+        user = authenticate(username=username, password=raw_password)
+        if user is not None:
+            login(request, user) # logs User in
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': "Unable to Log you in!"})
+    return render(request, 'login.html', {'error': None})
+
+def logoutUser(request):
+    logout(request)
+    return redirect('home')
+
+@login_required
+def dashboard(request):
+    return render(request, 'dashboard.html')
 
 class SaveData(generics.GenericAPIView):
     permission_classes = (AllowAny, )

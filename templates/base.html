@@ -46,12 +46,32 @@
             </div>
           </div>
           <ul class="navbar-nav navbar-nav-hover align-items-lg-center">
+
+            {% if user.is_authenticated %}
+              <li>
+                <a href="{% url 'dashboard' %}" class="nav-link" role="button">
+                  <span class="nav-link-inner--text">{{ user.username }}</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'logout' %}" class="nav-link" role="button">
+                  <span class="nav-link-inner--text">Logout</span>
+                </a>
+              </li>
+            {% else %}
+              <li>
+                <a href="{% url 'login' %}" class="nav-link" role="button">
+                  <span class="nav-link-inner--text">Login</span>
+                </a>
+              </li>
+            {% endif %}
+
             <li class="nav-item">
-              <a href="{% url 'data-desc' %}" class="nav-link" role="button">
-                <i class="ni ni-ui-04 d-lg-none"></i>
-                <span class="nav-link-inner--text">Data</span>
-              </a>
-            </li>
+                <a href="{% url 'data-desc' %}" class="nav-link" role="button">
+                  <i class="ni ni-ui-04 d-lg-none"></i>
+                  <span class="nav-link-inner--text">Data</span>
+                </a>
+              </li>
           </ul>
           <ul class="navbar-nav align-items-lg-center ml-lg-auto">
             <li class="nav-item d-none d-lg-block ml-lg-4">

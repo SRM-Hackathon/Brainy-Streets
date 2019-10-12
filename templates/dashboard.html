@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+    <div class="position-relative">
+        <!-- shape Hero -->
+        <section class="section section-lg section-shaped pb-150">
+            <div class="shape shape-style-3 shape-dark">
+                <span style="min-width:40px; min-height: 40px"></span>
+                <span style="min-width:40px; min-height: 40px"></span>
+                <span style="min-width:40px; min-height: 40px"></span>
+                <span style="min-width:40px; min-height: 40px"></span>
+                <span style="min-width:40px; min-height: 40px"></span>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endif %}
+
+            <div class="container py-lg-lg d-flex pt-5">
+            <div class="col px-0">
+                <div class="row">
+                <div class="col-lg-6 col-md-8">
+                    <h1 class="display-3 text-white">Dashboard</h1>
+                    <div class="btn-wrapper">
+                        <a href="#barricade" class="btn btn-info btn-icon mb-3 mb-sm-0">
+                            <span class="btn-inner--icon"><i class="fa fa-exclamation-triangle"></i></span>
+                            <span class="btn-inner--text">Barricade a Road</span>
+                        </a>
+                        <a href="#ambulance" class="btn btn-danger btn-icon mb-3 mb-sm-0">
+                            <span class="btn-inner--icon"><i class="fa fa-ambulance"></i></span>
+                            <span class="btn-inner--text">Create an Ambulance</span>
+                        </a>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </div>
+    <div>
+        <section>
+            <div class="container" id="barricade">
+            </div>
+            <div class="container" id="ambulance">
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block endjs %}
+{% endblock %}
