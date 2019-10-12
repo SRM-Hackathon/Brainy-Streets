@@ -9,37 +9,6 @@ var coordinates = {};
 
 var cacheddaynight = "day";
 
-window.onload = function () {
-    makeChart("Click on a sensor to see graphs", null, "");
-}
-
-function makeChart(label, data, container) {
-    if(data)
-    {
-        data_obj = [{
-            type: "line",
-            lineColor: "#ff0000",
-            dataPoints: data
-        }];
-    }
-    else{
-        data_obj = [];
-    }
-    chart = new CanvasJS.Chart(container+"chartContainer", {
-        animationEnabled: true,
-        theme: "light2",
-        title:{
-            text: label,
-        },
-        axisY:{
-            includeZero: false
-        },
-        data: data_obj
-    });
-    if(chart)
-        chart.render();
-}
-
 // Gives user's location
 if(navigator.geolocation) {
 
@@ -259,38 +228,6 @@ function newmap(latitude, longitude, daynight) {
                 long = "°W";
             }
             document.getElementById('selectedpointtext').innerText = geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long;
-
-            // console.log(geoPosition);
-
-            // get data from server for geoPosition coordinates
-            fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-data/'+geoPosition.latitude.toString()+"/"+geoPosition.longitude.toString())
-            .then(data => data.json())
-            .then(data => {
-                // console.log(data);
-                if(data.data.length)
-                {
-                    // document.getElementById('selectedpointtext').innerText += "<br>"+JSON.stringify(data.data);
-                    var organised_AQIdata = [];
-                    var organised_LDRdata = [];
-                    var organised_trafficdata = [];
-                    for(i=0;i<data.data.length;i++)
-                    {
-                        organised_AQIdata.push({y: parseFloat(data.data[i].aqi)})
-                        organised_LDRdata.push({y: parseInt(data.data[i].ldr)})
-                        organised_trafficdata.push({y: parseInt(data.data[i].hits)})
-                    }
-                    makeChart("Air Quality Index", organised_AQIdata, "AQI");
-                    makeChart("Light Density", organised_LDRdata, "LDR");
-                    makeChart("Traffic Density", organised_trafficdata, "Traffic");
-                }
-                else
-                {
-                    makeChart("Click on a sensor to see graphs", null, "");
-                    makeChart("", null, "");
-                    makeChart("", null, "");
-                }
-            });
-
         }
     })
 }
