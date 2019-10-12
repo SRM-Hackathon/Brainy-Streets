@@ -128,104 +128,138 @@ function newmap(latitude, longitude, daynight) {
     fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-geojson/'+latitude.toString()+"/"+longitude.toString())
     .then(data => data.json())
     .then(data => {
-        const geoJsonDataProvider = new harp.GeoJsonDataProvider("wireless-hotspots", data);
-        const geoJsonDataSource = new harp.OmvDataSource({
-            dataProvider: geoJsonDataProvider,
-            name: "wireless-hotspots",
-            //styleSetName: "wireless-hotspots" NOTE: Not necessary here. For use if you want to add your style rules in the external stylesheet.
-    });
+        console.log(data);
+        open_roads = {type: "FeatureCollection", features: []}
+        closed_roads = {type: "FeatureCollection", features: []}
+        for(feature of data.features)
+        {
+            if(feature.properties.barricade)
+                closed_roads.features.push(feature);
+            else
+                open_roads.features.push(feature);
+        }
 
-    map.addDataSource(geoJsonDataSource).then(() => {
-        const styles = [
-        {
-           when: "$geometryType == 'point'",
-           technique: "circles",
-           renderOrder: 1000,
-           attr: {
-              color: pointColor,
-              size: 15
-           }
-        },
-        {
-            "when": "$geometryType ^= 'line' && properties.barricade != 'barricaded'",
-            renderOrder: 10000,
-            technique: "solid-line",
+        const closed_geoJsonDataProvider = new harp.GeoJsonDataProvider("closed_roads", closed_roads);
+        const closed_geoJsonDataSource = new harp.OmvDataSource({
+            dataProvider: closed_geoJsonDataProvider,
+            name: "closed_roads",
+            //styleSetName: "wireless-hotspots" NOTE: Not necessary here. For use if you want to add your style rules in the external stylesheet.
+        });
+
+        map.addDataSource(closed_geoJsonDataSource).then(() => {
+            const styles = [
+            {
+            when: "$geometryType == 'point'",
+            technique: "circles",
+            renderOrder: 1000,
             attr: {
-               color: lineColor,
-               opacity: 1,
-               metricUnit: "Pixel",
-               lineWidth: 10
+                color: pointColor,
+                size: 15
             }
-         },
-         {
-             when: "$geometryType ^= 'line' && properties.barricade == 'barricaded'",
-             renderOrder: 10000,
-             technique: "solid-line",
-             attr: {
+            },
+            {
+                "when": "$geometryType ^= 'line'",
+                renderOrder: 10000,
+                technique: "solid-line",
+                attr: {
                 color: barricadedLineColor,
                 opacity: 1,
                 metricUnit: "Pixel",
                 lineWidth: 10
-             }
-          }
-        ]
-        geoJsonDataSource.setStyleSet(styles);
-        map.update();
-     });
-
-     canvas.onclick = evt => {
-        const geoPosition = map.getGeoCoordinatesAt(evt.pageX, evt.pageY);
-        if (geoPosition.latitude >= 0)
-        {
-            lat = "°N, ";
-        }
-        else
-        {
-            geoPosition.latitude = -geoPosition.latitude;
-            lat = "°S, ";
-        }
-        if (geoPosition.longitude >= 0)
-        {
-            long = "°E";
-        }
-        else
-        {
-            geoPosition.longitude = -geoPosition.longitude;
-            long = "°W";
-        }
-        document.getElementById('selectedpointtext').innerText = geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long;
-
-        // console.log(geoPosition);
-
-        // get data from server for geoPosition coordinates
-        fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-data/'+geoPosition.latitude.toString()+"/"+geoPosition.longitude.toString())
-        .then(data => data.json())
-        .then(data => {
-        // console.log(data);
-        if(data.data.length)
-        {
-            // document.getElementById('selectedpointtext').innerText += "<br>"+JSON.stringify(data.data);
-            var organised_AQIdata = [];
-            var organised_LDRdata = [];
-            var organised_trafficdata = [];
-            for(i=0;i<data.data.length;i++)
-            {
-                organised_AQIdata.push({y: parseFloat(data.data[i].aqi)})
-                organised_LDRdata.push({y: parseInt(data.data[i].ldr)})
-                organised_trafficdata.push({y: parseInt(data.data[i].hits)})
+                }
             }
-            makeChart("Air Quality Index", organised_AQIdata, "AQI");
-            makeChart("Light Density", organised_LDRdata, "LDR");
-            makeChart("Traffic Density", organised_trafficdata, "Traffic");
-        }
-        else
-        {
-            makeChart("Click on a sensor to see graphs", null, "");
-            makeChart("", null, "");
-            makeChart("", null, "");
-        }
+            ]
+            closed_geoJsonDataSource.setStyleSet(styles);
+            map.update();
         });
 
-     }
+        const open_geoJsonDataProvider = new harp.GeoJsonDataProvider("open_roads", open_roads);
+        const open_geoJsonDataSource = new harp.OmvDataSource({
+            dataProvider: open_geoJsonDataProvider,
+            name: "open_roads",
+            //styleSetName: "wireless-hotspots" NOTE: Not necessary here. For use if you want to add your style rules in the external stylesheet.
+        });
+
+        map.addDataSource(open_geoJsonDataSource).then(() => {
+            const styles = [
+            {
+            when: "$geometryType == 'point'",
+            technique: "circles",
+            renderOrder: 1000,
+            attr: {
+                color: pointColor,
+                size: 15
+            }
+            },
+            {
+                "when": "$geometryType ^= 'line'",
+                renderOrder: 10000,
+                technique: "solid-line",
+                attr: {
+                color: lineColor,
+                opacity: 1,
+                metricUnit: "Pixel",
+                lineWidth: 10
+                }
+            }
+            ]
+            open_geoJsonDataSource.setStyleSet(styles);
+            map.update();
+        });
+
+        canvas.onclick = evt => {
+            const geoPosition = map.getGeoCoordinatesAt(evt.pageX, evt.pageY);
+            if (geoPosition.latitude >= 0)
+            {
+                lat = "°N, ";
+            }
+            else
+            {
+                geoPosition.latitude = -geoPosition.latitude;
+                lat = "°S, ";
+            }
+            if (geoPosition.longitude >= 0)
+            {
+                long = "°E";
+            }
+            else
+            {
+                geoPosition.longitude = -geoPosition.longitude;
+                long = "°W";
+            }
+            document.getElementById('selectedpointtext').innerText = geoPosition.latitude.toFixed(6) + lat + geoPosition.longitude.toFixed(6) + long;
+
+            // console.log(geoPosition);
+
+            // get data from server for geoPosition coordinates
+            fetch(window.location.href.split('/').slice(0,3).join('/')+'/api/get-data/'+geoPosition.latitude.toString()+"/"+geoPosition.longitude.toString())
+            .then(data => data.json())
+            .then(data => {
+            // console.log(data);
+            if(data.data.length)
+            {
+                // document.getElementById('selectedpointtext').innerText += "<br>"+JSON.stringify(data.data);
+                var organised_AQIdata = [];
+                var organised_LDRdata = [];
+                var organised_trafficdata = [];
+                for(i=0;i<data.data.length;i++)
+                {
+                    organised_AQIdata.push({y: parseFloat(data.data[i].aqi)})
+                    organised_LDRdata.push({y: parseInt(data.data[i].ldr)})
+                    organised_trafficdata.push({y: parseInt(data.data[i].hits)})
+                }
+                makeChart("Air Quality Index", organised_AQIdata, "AQI");
+                makeChart("Light Density", organised_LDRdata, "LDR");
+                makeChart("Traffic Density", organised_trafficdata, "Traffic");
+            }
+            else
+            {
+                makeChart("Click on a sensor to see graphs", null, "");
+                makeChart("", null, "");
+                makeChart("", null, "");
+            }
+            });
+
+        }
     })
 }

@@ -100,6 +100,9 @@ class GetGeoJson(generics.GenericAPIView):
         for sensor in sensors:
             data = {
                 "type": "Feature",
+                "properties": {
+                    "barricade": 1
+                },
                 "geometry": {
                     "type": "Point",
                     "coordinates": [ sensor.longitude/1000000, sensor.latitude/1000000, 0.0 ]
@@ -113,7 +116,7 @@ class GetGeoJson(generics.GenericAPIView):
             data = {
                 "type": "line",
                 "properties": {
-                    "barricade": "barricaded" if road.barricade else "open"
+                    "barricade": 1 if road.barricade else 0
                 },
                 "geometry": {
                     "type": "LineString",
