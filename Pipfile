@@ -13,7 +13,7 @@ gunicorn = "*"
 django-heroku = "*"
 django-cors-headers = "*"
 django-rest-framework = "*"
-Django = "==2.2.3"
+Django = "==2.2.22"
 
 [requires]
 python_version = "3.7"
